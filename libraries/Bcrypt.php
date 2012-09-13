@@ -29,7 +29,7 @@ class Bcrypt {
 	/**
 	 * Privates
 	 */	
-	private $_itoa64;
+	private $_itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 	private $_random_state;
 	
 	/**
@@ -46,8 +46,6 @@ class Bcrypt {
 	 */
 	public function __construct($params = array())
 	{
-		$this->_itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-
 		if (count($params) > 0)
 		{
 			$this->initialize($params);
