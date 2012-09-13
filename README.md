@@ -3,10 +3,7 @@
 
 Adaption of PHPPass (0.3) for use as a CodeIgniter Bcrypt library.
 
-Still in development, planning to add:
-
-* Config file compatibility
-* Documentation and examples
+Allowed for the use of a separate config file, adjusted for some CodeIgniter configurability, added the scope of functions, changed hashing and checking functions to meet CodeIgniter standards for function names.
 
 ## Installation
 
