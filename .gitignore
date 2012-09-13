@@ -1,5 +1,2 @@
-*/config/development
-*/logs/log-*.php
-*/logs/!index.html
-*/cache/*
-*/cache/!index.html
+# OS generated files #
+.DS_Store*
