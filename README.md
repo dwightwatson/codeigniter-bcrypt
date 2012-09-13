@@ -10,9 +10,9 @@ Still in development, planning to add:
 
 ## Installation
 
-* Place Bcrypt.php in your ``application/libraries`` folder.
-* Change ``$iteration_count_log2`` in the object constructor if you wish for a different default value.
-* Change ``$portable_hashes`` in the object constructure if you want your hashes to be portable. 
+* Place ``Bcrypt.php`` in your ``application/libraries`` folder.
+* Place ``bcrypt.php`` in your ``application/config`` folder.
+* Adjust options in the config file as neccessary.
 
 ## Usage
 First, load the Bcrypt library or autoload it in ``config/autoload.php``.
