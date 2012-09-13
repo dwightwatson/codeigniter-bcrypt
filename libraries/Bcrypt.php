@@ -25,24 +25,61 @@
 # requirements (there can be none), but merely suggestions.
 #
 class Bcrypt {
-	var $itoa64;
-	var $iteration_count_log2;
-	var $portable_hashes;
-	var $random_state;
 
-	public function __construct($iteration_count_log2 = 8, $portable_hashes = FALSE)
+	/**
+	 * Privates
+	 */	
+	private $_itoa64;
+	private $_random_state;
+	
+	/**
+	 * Options 
+	 */
+	private $_iteration_count = 8;
+	private $_portable_hashes = FALSE;
+
+	/**
+	 * Constructor
+	 *
+	 * @access	public
+	 * @param	array
+	 */
+	public function __construct($params = array())
 	{
-		$this->itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+		$this->_itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
-		if ($iteration_count_log2 < 4 || $iteration_count_log2 > 31)
-			$iteration_count_log2 = 8;
-		$this->iteration_count_log2 = $iteration_count_log2;
+		if (count($params) > 0)
+		{
+			$this->initialize($params);
+		}
 
-		$this->portable_hashes = $portable_hashes;
+		if ($this->_iteration_count < 4 || $this->_iteration_count > 31)
+			$this->_iteration_count = 8;
 
-		$this->random_state = microtime();
+		$this->_random_state = microtime();
 		if (function_exists('getmypid'))
-			$this->random_state .= getmypid();
+			$this->_random_state .= getmypid();
+	}
+	
+	/**
+	 * Initialize preferences
+	 *
+	 * @access 	public
+	 * @param	array
+	 * @return	void
+	 */
+	private function initialize($params = array())
+	{
+		if (count($params) > 0)
+		{
+			foreach ($params as $key => $value)
+			{
+				if (isset($this->{'_' . $key}))
+				{
+					$this->{'_' . $key} = $value;
+				}
+			}
+		}
 	}
 
 	protected function get_random_bytes($count)
@@ -57,10 +94,10 @@ class Bcrypt {
 		if (strlen($output) < $count) {
 			$output = '';
 			for ($i = 0; $i < $count; $i += 16) {
-				$this->random_state =
-				    md5(microtime() . $this->random_state);
+				$this->_random_state =
+				    md5(microtime() . $this->_random_state);
 				$output .=
-				    pack('H*', md5($this->random_state));
+				    pack('H*', md5($this->_random_state));
 			}
 			$output = substr($output, 0, $count);
 		}
@@ -74,18 +111,18 @@ class Bcrypt {
 		$i = 0;
 		do {
 			$value = ord($input[$i++]);
-			$output .= $this->itoa64[$value & 0x3f];
+			$output .= $this->_itoa64[$value & 0x3f];
 			if ($i < $count)
 				$value |= ord($input[$i]) << 8;
-			$output .= $this->itoa64[($value >> 6) & 0x3f];
+			$output .= $this->_itoa64[($value >> 6) & 0x3f];
 			if ($i++ >= $count)
 				break;
 			if ($i < $count)
 				$value |= ord($input[$i]) << 16;
-			$output .= $this->itoa64[($value >> 12) & 0x3f];
+			$output .= $this->_itoa64[($value >> 12) & 0x3f];
 			if ($i++ >= $count)
 				break;
-			$output .= $this->itoa64[($value >> 18) & 0x3f];
+			$output .= $this->_itoa64[($value >> 18) & 0x3f];
 		} while ($i < $count);
 
 		return $output;
@@ -94,7 +131,7 @@ class Bcrypt {
 	protected function gensalt_private($input)
 	{
 		$output = '$P$';
-		$output .= $this->itoa64[min($this->iteration_count_log2 +
+		$output .= $this->_itoa64[min($this->iteration_count_log2 +
 			((PHP_VERSION >= '5') ? 5 : 3), 30)];
 		$output .= $this->encode64($input, 6);
 
@@ -112,7 +149,7 @@ class Bcrypt {
 		if ($id != '$P$' && $id != '$H$')
 			return $output;
 
-		$count_log2 = strpos($this->itoa64, $setting[3]);
+		$count_log2 = strpos($this->_itoa64, $setting[3]);
 		if ($count_log2 < 7 || $count_log2 > 30)
 			return $output;
 
@@ -154,10 +191,10 @@ class Bcrypt {
 		$count = (1 << $count_log2) - 1;
 
 		$output = '_';
-		$output .= $this->itoa64[$count & 0x3f];
-		$output .= $this->itoa64[($count >> 6) & 0x3f];
-		$output .= $this->itoa64[($count >> 12) & 0x3f];
-		$output .= $this->itoa64[($count >> 18) & 0x3f];
+		$output .= $this->_itoa64[$count & 0x3f];
+		$output .= $this->_itoa64[($count >> 6) & 0x3f];
+		$output .= $this->_itoa64[($count >> 12) & 0x3f];
+		$output .= $this->_itoa64[($count >> 18) & 0x3f];
 
 		$output .= $this->encode64($input, 3);
 
