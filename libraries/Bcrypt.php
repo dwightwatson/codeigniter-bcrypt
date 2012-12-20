@@ -1,39 +1,41 @@
-<?php
-#
-# Portable PHP password hashing framework.
-#
-# Version 0.3 / adapted for CodeIgniter by Dwight Watson.
-#
-# Written by Solar Designer <solar at openwall.com> in 2004-2006 and placed in
-# the public domain.  Revised in subsequent years, still public domain.
-#
-# There's absolutely no warranty.
-#
-# The homepage URL for this framework is:
-#
-#	http://www.openwall.com/phpass/
-#
-# Please be sure to update the Version line if you edit this file in any way.
-# It is suggested that you leave the main version number intact, but indicate
-# your project name (after the slash) and add your own revision information.
-#
-# Please do not change the "private" password hashing method implemented in
-# here, thereby making your hashes incompatible.  However, if you must, please
-# change the hash type identifier (the "$P$") to something different.
-#
-# Obviously, since this code is in the public domain, the above are not
-# requirements (there can be none), but merely suggestions.
-#
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+/**
+ * Portable PHP password hashing framework.
+ *
+ * Version 0.3 / adapted for CodeIgniter by Dwight Watson.
+ * http://www.github.com/studiousapp/codeigniter-bcrypt
+ *
+ * Written by Solar Designer <solar at openwall.com> in 2004-2006 and placed in
+ * the public domain.  Revised in subsequent years, still public domain.
+ *
+ * There's absolutely no warranty.
+ *
+ * The homepage URL for this framework is:
+ *
+ *	http://www.openwall.com/phpass/
+ *
+ * Please be sure to update the Version line if you edit this file in any way.
+ * It is suggested that you leave the main version number intact, but indicate
+ * your project name (after the slash) and add your own revision information.
+ *
+ * Please do not change the "private" password hashing method implemented in
+ * here, thereby making your hashes incompatible.  However, if you must, please
+ * change the hash type identifier (the "$P$") to something different.
+ *
+ * Obviously, since this code is in the public domain, the above are not
+ * requirements (there can be none), but merely suggestions.
+ **/
 class Bcrypt {
 
 	/**
 	 * Privates
-	 */	
+	 */
 	private $_itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 	private $_random_state;
 	
 	/**
-	 * Options 
+	 * Options
 	 */
 	private $_iteration_count = 8;
 	private $_portable_hashes = FALSE;
@@ -129,7 +131,7 @@ class Bcrypt {
 	protected function gensalt_private($input)
 	{
 		$output = '$P$';
-		$output .= $this->_itoa64[min($this->iteration_count_log2 +
+		$output .= $this->_itoa64[min($this->_iteration_count +
 			((PHP_VERSION >= '5') ? 5 : 3), 30)];
 		$output .= $this->encode64($input, 6);
 
@@ -183,7 +185,7 @@ class Bcrypt {
 
 	protected function gensalt_extended($input)
 	{
-		$count_log2 = min($this->iteration_count_log2 + 8, 24);
+		$count_log2 = min($this->_iteration_count + 8, 24);
 		# This should be odd to not reveal weak DES keys, and the
 		# maximum valid value is (2**24 - 1) which is odd anyway.
 		$count = (1 << $count_log2) - 1;
@@ -212,8 +214,8 @@ class Bcrypt {
 		$itoa64 = './ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
 		$output = '$2a$';
-		$output .= chr(ord('0') + $this->iteration_count_log2 / 10);
-		$output .= chr(ord('0') + $this->iteration_count_log2 % 10);
+		$output .= chr(ord('0') + $this->_iteration_count / 10);
+		$output .= chr(ord('0') + $this->_iteration_count % 10);
 		$output .= '$';
 
 		$i = 0;
@@ -244,7 +246,7 @@ class Bcrypt {
 	{
 		$random = '';
 
-		if (CRYPT_BLOWFISH == 1 && !$this->portable_hashes) {
+		if (CRYPT_BLOWFISH == 1 && !$this->_portable_hashes) {
 			$random = $this->get_random_bytes(16);
 			$hash =
 			    crypt($password, $this->gensalt_blowfish($random));
@@ -252,7 +254,7 @@ class Bcrypt {
 				return $hash;
 		}
 
-		if (CRYPT_EXT_DES == 1 && !$this->portable_hashes) {
+		if (CRYPT_EXT_DES == 1 && !$this->_portable_hashes) {
 			if (strlen($random) < 3)
 				$random = $this->get_random_bytes(3);
 			$hash =
@@ -285,4 +287,5 @@ class Bcrypt {
 	}
 }
 
-?>
+/* End of file bcrypt.php */
+/* Location: ./application/libraries/bcrypt.php */
