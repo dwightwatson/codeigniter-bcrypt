@@ -1,4 +1,10 @@
 # codeigniter-bcrypt
+
+## DEPRECATION WARNING
+
+This library is not maintained, and it is suggested that you don't use it. It was simply a CodeIgniter wrapper around the PHPPass library. Please look into using [PHP's native password hasing functions instead](https://secure.php.net/manual/en/function.password-hash.php).
+
+
 ## Bcrypt (PHPPass) for CodeIgniter
 
 Adaption of PHPPass (0.3) for use as a CodeIgniter Bcrypt library.
